@@ -1,32 +1,53 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
+import { WebView } from "react-native-webview";
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
-import { RootTabScreenProps } from '../types';
+import { RootTabScreenProps } from "../types";
+const js = `
+// Intercept any lightning: requests
+window.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!target || !target.closest) {
+    return;
+  }
+  const lightningLink = target.closest('[href^="lightning:" i]');
+  if (!lightningLink) {
+    return;
+  }
+  event.preventDefault();
 
-export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+  const href = lightningLink.getAttribute("href").toLowerCase();
+  const paymentRequest = href.replace("lightning:", "");
+  window.ReactNativeWebView.postMessage(JSON.stringify({
+    type: "payReq",
+    data: paymentRequest
+  }));
+});  
+`;
+
+export default function TabOneScreen({
+  navigation,
+}: RootTabScreenProps<"TabOne">) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabOneScreen.tsx" />
-    </View>
+    <WebView
+      source={{ uri: "https://fortune.lngames.net/" }}
+      injectedJavaScript={js}
+      onMessage={(event) => {
+        const message = JSON.parse(event.nativeEvent.data);
+        switch (message.type) {
+          case "payReq":
+            alert(`should pay: ${message.data}`);
+            break;
+          default:
+            break;
+        }
+      }}
+      style={styles.container}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
   },
 });
