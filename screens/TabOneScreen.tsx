@@ -1,4 +1,5 @@
-import { StyleSheet } from "react-native";
+import { useState } from "react";
+import { Text, View, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 
 import { RootTabScreenProps } from "../types";
@@ -27,27 +28,39 @@ window.addEventListener("click", (event) => {
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<"TabOne">) {
+  const [uri, setUri] = useState("https://fortune.lngames.net/");
+
   return (
-    <WebView
-      source={{ uri: "https://fortune.lngames.net/" }}
-      injectedJavaScript={js}
-      onMessage={(event) => {
-        const message = JSON.parse(event.nativeEvent.data);
-        switch (message.type) {
-          case "payReq":
-            alert(`should pay: ${message.data}`);
-            break;
-          default:
-            break;
-        }
-      }}
-      style={styles.container}
-    />
+    <View style={styles.container}>
+      <WebView
+        source={{ uri }}
+        injectedJavaScript={js}
+        onMessage={(event) => {
+          const request = JSON.parse(event.nativeEvent.data);
+          switch (request.type) {
+            case "payReq":
+              alert(`should pay: ${request.data}`);
+              break;
+            default:
+              break;
+          }
+        }}
+      />
+      <View style={styles.addressBar}>
+        <Text>{uri}</Text>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  addressBar: {
+    borderRadius: 100,
+    backgroundColor: "white",
+    padding: 16,
+    margin: 8,
   },
 });
