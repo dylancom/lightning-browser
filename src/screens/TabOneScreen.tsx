@@ -9,9 +9,9 @@ import {
 import { WebView } from "react-native-webview";
 import { Searchbar } from "react-native-paper";
 
-import { RootTabScreenProps } from "../types";
-import injectedJavaScript from "../src/injectedJavaScript";
-import handleMessage from "../src/handleMessage";
+import { RootTabScreenProps } from "../../types";
+import injectedJavaScript from "../injectedJavaScript";
+import handleMessage from "../handleMessage";
 
 const DEFAULT_WEBSITE = "https://fortune.lngames.net/";
 

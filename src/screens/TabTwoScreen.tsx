@@ -11,7 +11,7 @@ import {
 } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import globals from "../src/globals";
+import globals from "../globals";
 
 export default function TabTwoScreen() {
   const [loading, setLoading] = useState(false);

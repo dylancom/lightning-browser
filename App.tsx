@@ -9,10 +9,10 @@ import {
   DefaultTheme as NavigationDefaultTheme,
 } from "@react-navigation/native";
 
-import useCachedResources from "./hooks/useCachedResources";
+import useCachedResources from "./src/hooks/useCachedResources";
 // import useColorScheme from "./hooks/useColorScheme";
-import RootNavigator from "./navigation";
-import LinkingConfiguration from "./navigation/LinkingConfiguration";
+import RootNavigator from "./src/navigation";
+import LinkingConfiguration from "./src/navigation/LinkingConfiguration";
 
 const CombinedDefaultTheme = {
   ...PaperDefaultTheme,

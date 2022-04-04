@@ -18,7 +18,7 @@ import {
   RootStackParamList,
   RootTabParamList,
   RootTabScreenProps,
-} from "../types";
+} from "../../types";
 
 /**
  * A root stack navigator is often used for displaying modals on top of all other content.
