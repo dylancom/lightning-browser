@@ -7,21 +7,30 @@ import {
   StyleSheet,
 } from "react-native";
 import { WebView } from "react-native-webview";
+import { Searchbar } from "react-native-paper";
 
 import { RootTabScreenProps } from "../types";
 import injectedJavaScript from "../src/injectedJavaScript";
 import handleMessage from "../src/handleMessage";
 
+const DEFAULT_WEBSITE = "https://fortune.lngames.net/";
+
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<"TabOne">) {
-  const [uri, setUri] = useState("https://fortune.lngames.net/");
+  const [searchQuery, setSearchQuery] = useState(DEFAULT_WEBSITE);
+  const [uri, setUri] = useState(DEFAULT_WEBSITE);
   const [loading, setLoading] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.addressBar}>
-        <Text>{uri}</Text>
+        <Searchbar
+          placeholder="Enter a URL"
+          onChangeText={setSearchQuery}
+          onSubmitEditing={({ nativeEvent: { text } }) => setUri(text)}
+          value={searchQuery}
+        />
       </View>
       <View style={styles.webView}>
         <WebView
@@ -46,12 +55,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   addressBar: {
-    borderRadius: 100,
-    backgroundColor: "#eee",
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginHorizontal: 8,
-    marginBottom: 8,
+    paddingVertical: 8,
   },
   webView: {
     flex: 1,
