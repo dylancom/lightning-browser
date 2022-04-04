@@ -11,4 +11,4 @@ The browser implements the WebLN standard as the interface that allows websites 
 - `yarn install` to install dependencies.
 - `yarn run android` to open Android.
 - `yarn run ios` to open iOS simulator.
-- `yarn start` to see all options and for e.g. scan a QR code to run the app on your phone with Expo go.
+- `yarn start` to see all options and for e.g. scan a QR code to run the app on your own device with [Expo Go](https://expo.dev/client).
