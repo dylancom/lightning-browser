@@ -1,14 +1,126 @@
-import { StyleSheet } from 'react-native';
+import { useState, useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Avatar,
+  Button,
+  Card,
+  Divider,
+  Title,
+  Snackbar,
+  TextInput,
+} from "react-native-paper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+import globals from "../src/globals";
 
 export default function TabTwoScreen() {
+  const [loading, setLoading] = useState(false);
+  const [uri, setUri] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [alias, setAlias] = useState("");
+  const [balance, setBalance] = useState("");
+
+  useEffect(() => {
+    getAccountInfo();
+  }, []);
+
+  async function getAccountInfo() {
+    setLoading(true);
+    const connector = await globals.getConnector();
+    if (connector) {
+      try {
+        const [infoRes, balanceRes] = await Promise.all([
+          connector.getInfo(),
+          connector.getBalance(),
+        ]);
+        setAlias(infoRes.alias);
+        setBalance(`${balanceRes.balance} sats`);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
+  }
+
+  async function handleSignIn() {
+    try {
+      await AsyncStorage.setItem("@account", uri);
+      await getAccountInfo();
+      setVisible(true);
+      setUri("");
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function handleSignOut() {
+    try {
+      await AsyncStorage.removeItem("@account");
+      globals.connector = null;
+      setAlias("");
+      setBalance("");
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabTwoScreen.tsx" />
+      {!alias ? (
+        <Card elevation={2}>
+          <Card.Content>
+            <Title>Connect to LNDHub</Title>
+            <TextInput
+              mode="outlined"
+              autoComplete={false}
+              label="LNDHub Export URI"
+              value={uri}
+              onChangeText={(text) => setUri(text)}
+              style={{ marginVertical: 16 }}
+            />
+          </Card.Content>
+          <Divider />
+          <Card.Actions style={{ justifyContent: "flex-end" }}>
+            <Button mode="contained" onPress={handleSignIn}>
+              Sign in
+            </Button>
+          </Card.Actions>
+        </Card>
+      ) : (
+        <Card elevation={2}>
+          <Card.Title
+            title={alias}
+            subtitle={balance}
+            left={(props) => <Avatar.Icon {...props} icon="account" />}
+          />
+          <Divider />
+          <Card.Actions style={{ justifyContent: "flex-end" }}>
+            <Button mode="contained" onPress={handleSignOut}>
+              Sign out
+            </Button>
+          </Card.Actions>
+        </Card>
+      )}
+
+      <Snackbar
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        duration={1000}
+      >
+        Signed in.
+      </Snackbar>
     </View>
   );
 }
@@ -16,16 +128,6 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+    padding: 24,
   },
 });
