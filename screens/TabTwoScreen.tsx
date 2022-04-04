@@ -7,7 +7,6 @@ import {
   Card,
   Divider,
   Title,
-  Snackbar,
   TextInput,
 } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -17,7 +16,6 @@ import globals from "../src/globals";
 export default function TabTwoScreen() {
   const [loading, setLoading] = useState(false);
   const [uri, setUri] = useState("");
-  const [visible, setVisible] = useState(false);
   const [alias, setAlias] = useState("");
   const [balance, setBalance] = useState("");
 
@@ -50,7 +48,6 @@ export default function TabTwoScreen() {
     try {
       await AsyncStorage.setItem("@account", uri);
       await getAccountInfo();
-      setVisible(true);
       setUri("");
     } catch (e) {
       console.error(e);
@@ -113,14 +110,6 @@ export default function TabTwoScreen() {
           </Card.Actions>
         </Card>
       )}
-
-      <Snackbar
-        visible={visible}
-        onDismiss={() => setVisible(false)}
-        duration={1000}
-      >
-        Signed in.
-      </Snackbar>
     </View>
   );
 }
