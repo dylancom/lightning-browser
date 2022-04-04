@@ -83,6 +83,7 @@ export default function TabTwoScreen() {
               mode="outlined"
               autoComplete={false}
               label="LNDHub Export URI"
+              secureTextEntry
               value={uri}
               onChangeText={(text) => setUri(text)}
               style={{ marginVertical: 16 }}
