@@ -1,11 +1,5 @@
-import { useState } from "react";
-import {
-  ActivityIndicator,
-  SafeAreaView,
-  Text,
-  View,
-  StyleSheet,
-} from "react-native";
+import { useState, useRef } from "react";
+import { SafeAreaView, View, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 import { Searchbar } from "react-native-paper";
 
@@ -18,9 +12,9 @@ const DEFAULT_WEBSITE = "https://fortune.lngames.net/";
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<"TabOne">) {
+  const webview = useRef<WebView>(null);
   const [searchQuery, setSearchQuery] = useState(DEFAULT_WEBSITE);
   const [uri, setUri] = useState(DEFAULT_WEBSITE);
-  const [loading, setLoading] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,16 +28,12 @@ export default function TabOneScreen({
       </View>
       <View style={styles.webView}>
         <WebView
+          ref={webview}
           source={{ uri }}
           injectedJavaScript={injectedJavaScript}
-          onMessage={(event) => handleMessage(event, setLoading)}
+          onMessage={(event) => handleMessage(webview.current!, event)}
           scalesPageToFit={false}
         />
-        {loading && (
-          <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color="white" />
-          </View>
-        )}
       </View>
     </SafeAreaView>
   );

@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, Method } from "axios";
+import { Buffer } from "buffer";
 
 interface Config {
   login: string;
@@ -63,6 +64,32 @@ class LNDHub {
     }>("POST", "/payinvoice", {
       invoice: paymentRequest,
     });
+    if (data.error) {
+      throw new Error(data.message);
+    }
+    if (data.payment_error) {
+      throw new Error(data.payment_error);
+    }
+    if (
+      typeof data.payment_hash === "object" &&
+      data.payment_hash.type === "Buffer"
+    ) {
+      data.payment_hash = Buffer.from(data.payment_hash.data).toString("hex");
+    }
+    if (
+      typeof data.payment_preimage === "object" &&
+      data.payment_preimage.type === "Buffer"
+    ) {
+      data.payment_preimage = Buffer.from(data.payment_preimage.data).toString(
+        "hex"
+      );
+    }
+
+    return {
+      preimage: data.payment_preimage as string,
+      paymentHash: data.payment_hash as string,
+      route: data.payment_route,
+    };
   }
 
   async authorize() {
